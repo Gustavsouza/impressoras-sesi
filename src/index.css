@@ -1,0 +1,43 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark, .dark *));
+
+@theme {
+  /* Light palette */
+  --color-brand-1: #1747A6;
+  --color-brand-2: #6D99F2;
+  --color-brand-3: #7EB0F2;
+  --color-brand-4: #AECCF2;
+  --color-brand-5: #C1DBFB;
+
+  /* Dark palette */
+  --color-night-1: #353956;
+  --color-night-2: #54668E;
+  --color-night-3: #59598F;
+  --color-night-4: #879EC6;
+  --color-night-5: #F5F6E6;
+}
+
+@layer base {
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+
+  body {
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  }
+
+  ::-webkit-scrollbar { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: #AECCF2;
+    border-radius: 9999px;
+  }
+  .dark ::-webkit-scrollbar-thumb { background: #59598F; }
+
+  input[type='range'] { accent-color: #1747A6; }
+  .dark input[type='range'] { accent-color: #879EC6; }
+}
