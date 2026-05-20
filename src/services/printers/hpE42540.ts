@@ -1,25 +1,47 @@
 import type { PrinterStatusData } from '../../types/printer';
 
-/**
- * In production: fetches https://{ip}/hp/device/InternalPages/Index?id=SuppliesStatus
- * Uses DOMParser to extract:
- *   #BlackCartridge1-Header_Level      → toner %
- *   #BlackCartridge1-EstimatedPagesRemaining → pagesRemaining
- *   #BlackCartridge1-SupplyState       → OK|Low|Very Low → status
- *   #BlackCartridge1-SerialNumber      → serial
- */
-export async function getHPE42540Status(ip: string): Promise<PrinterStatusData> {
-  // Mock — replace with real fetch when proxy/backend is available
-  await new Promise(resolve => setTimeout(resolve, 150 + Math.random() * 100));
-  void ip;
+// Endpoint: https://{ip}/hp/device/InternalPages/Index?id=SuppliesStatus
+// DOM elements used:
+//   #BlackCartridge1-Header_Level            → "78%" → toner
+//   #BlackCartridge1-EstimatedPagesRemaining → "4200"
+//   #BlackCartridge1-SupplyState             → "OK" | "Low" | "Very Low"
 
-  return {
-    online: true,
-    status: 'online',
-    toner: 78,
-    pagesRemaining: 4200,
-    serial: '16908309',
-    firmware: '2.41.0',
-    lastUpdate: new Date().toISOString(),
-  };
+export async function getHPE42540Status(ip: string): Promise<PrinterStatusData> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 6000);
+
+  try {
+    const res = await fetch(
+      `https://${ip}/hp/device/InternalPages/Index?id=SuppliesStatus`,
+      { signal: controller.signal },
+    );
+    clearTimeout(timer);
+
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const html = await res.text();
+    const doc = new DOMParser().parseFromString(html, 'text/html');
+
+    const levelEl = doc.getElementById('BlackCartridge1-Header_Level');
+    const pagesEl = doc.getElementById('BlackCartridge1-EstimatedPagesRemaining');
+    const stateEl = doc.getElementById('BlackCartridge1-SupplyState');
+
+    const toner = parseInt((levelEl?.textContent ?? '0').replace(/[^0-9]/g, ''), 10);
+    const pagesRemaining = parseInt((pagesEl?.textContent ?? '0').replace(/[^0-9]/g, ''), 10);
+    const stateText = (stateEl?.textContent ?? 'OK').toLowerCase();
+
+    const status =
+      stateText.includes('very') ? 'critical' :
+      stateText === 'low' ? 'warning' : 'online';
+
+    return {
+      online: true,
+      status,
+      toner,
+      pagesRemaining,
+      lastUpdate: new Date().toISOString(),
+    };
+  } catch {
+    clearTimeout(timer);
+    throw new Error('unreachable');
+  }
 }
