@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 // Subnets used by the corporate network
-const CORPORATE_PREFIXES = ['10.50.', '10.40.'];
+const CORPORATE_PREFIXES = ['10.50.8.', '10.40.8.'];
 
 function gatherLocalIPs(): Promise<string[]> {
   return new Promise((resolve) => {
