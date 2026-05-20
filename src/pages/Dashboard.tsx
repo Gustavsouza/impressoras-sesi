@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { Sun, Moon, Printer } from 'lucide-react';
 import type { Printer as PrinterType } from '../types/printer';
 import { usePrinters } from '../hooks/usePrinters';
+import { useNetworkDetection } from '../hooks/useNetworkDetection';
 import { useTheme } from '../contexts/ThemeContext';
 import DashboardStats from '../components/dashboard/DashboardStats';
 import PrinterCard from '../components/dashboard/PrinterCard';
@@ -17,6 +18,7 @@ const TYPE_OPTIONS = [
 
 export default function Dashboard() {
   const { isDark, toggle } = useTheme();
+  const { onCorporateNetwork } = useNetworkDetection();
 
   const {
     printers,
@@ -27,7 +29,6 @@ export default function Dashboard() {
     units,
     stats,
     updatePrinter,
-    networkError,
   } = usePrinters();
 
   const [selected, setSelected] = useState<PrinterType | null>(null);
@@ -55,7 +56,7 @@ export default function Dashboard() {
             <p className="text-sm text-brand-2 dark:text-night-4">
               {stats.total} impressoras · clique para editar
             </p>
-            {networkError && (
+            {onCorporateNetwork === false && (
               <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/25 dark:text-amber-400 dark:border-amber-700/40">
                 <span className="w-1.5 h-1.5 rounded-full bg-amber-500 dark:bg-amber-400 shrink-0" />
                 Fora da rede corporativa

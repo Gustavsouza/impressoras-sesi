@@ -31,7 +31,6 @@ export function usePrinters() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterUnit, setFilterUnit] = useState('all');
-  const [networkError, setNetworkError] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -61,8 +60,6 @@ export function usePrinters() {
         }),
       );
 
-      // All offline on first load → outside corporate network
-      setNetworkError(offlineCount === initialData.length);
       setLoading(false);
     };
 
@@ -124,6 +121,5 @@ export function usePrinters() {
     stats,
     updatePrinter,
     loading,
-    networkError,
   };
 }
