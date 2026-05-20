@@ -7,6 +7,7 @@ import { useTheme } from '../contexts/ThemeContext';
 import DashboardStats from '../components/dashboard/DashboardStats';
 import PrinterCard from '../components/dashboard/PrinterCard';
 import PrinterModal from '../components/dashboard/PrinterModal';
+import ChamadoModal from '../components/dashboard/ChamadoModal';
 import SearchBar from '../components/ui/SearchBar';
 import FilterDropdown from '../components/ui/FilterDropdown';
 
@@ -31,7 +32,8 @@ export default function Dashboard() {
     updatePrinter,
   } = usePrinters();
 
-  const [selected, setSelected] = useState<PrinterType | null>(null);
+  const [selected, setSelected]   = useState<PrinterType | null>(null);
+  const [chamado,  setChamado]    = useState<PrinterType | null>(null);
 
   const grouped = useMemo(() => {
     const map: Record<string, PrinterType[]> = {};
@@ -161,6 +163,7 @@ export default function Dashboard() {
                     key={p.id}
                     printer={p}
                     onClick={() => setSelected(p)}
+                    onChamado={() => setChamado(p)}
                   />
                 ))}
               </div>
@@ -179,6 +182,14 @@ export default function Dashboard() {
             Ajuste os filtros ou o termo de busca
           </p>
         </div>
+      )}
+
+      {/* Chamado Modal */}
+      {chamado && (
+        <ChamadoModal
+          printer={chamado}
+          onClose={() => setChamado(null)}
+        />
       )}
 
       {/* Edit Modal */}

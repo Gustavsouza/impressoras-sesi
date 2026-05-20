@@ -8,6 +8,10 @@ interface BasePrinter {
   ip: string;
   unit: string;
   status: PrinterStatusType;
+  rep: string;
+  serial: string;
+  pin?: string;
+  queue: string;
 }
 
 export interface LaserPrinter extends BasePrinter {
