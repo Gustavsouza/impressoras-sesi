@@ -1,29 +1,9 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { printers as initialData } from '../data/printers';
-import type { Printer, PrinterStatusData } from '../types/printer';
-import { getPrinterStatus } from '../services/printers/parserManager';
+import type { Printer } from '../types/printer';
 
 export type FilterStatus = 'all' | 'online' | 'attention' | 'offline';
 export type FilterType = 'laser' | 'ink' | 'all';
-
-function applyLiveData(printer: Printer, live: PrinterStatusData): Printer {
-  const base = { ...printer, status: live.status };
-  if (base.type === 'laser') {
-    return {
-      ...base,
-      toner: live.toner ?? base.toner,
-      pagesRemaining: live.pagesRemaining ?? base.pagesRemaining,
-    };
-  }
-  const ink = base as Extract<Printer, { type: 'ink' }>;
-  return {
-    ...base,
-    black:   live.black   ?? ink.black,
-    cyan:    live.cyan    ?? ink.cyan,
-    magenta: live.magenta ?? ink.magenta,
-    yellow:  live.yellow  ?? ink.yellow,
-  };
-}
 
 export function usePrinters() {
   const [all, setAll] = useState<Printer[]>(initialData);
@@ -31,40 +11,6 @@ export function usePrinters() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterUnit, setFilterUnit] = useState('all');
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchAll = async () => {
-      const results = await Promise.allSettled(
-        initialData.map(p =>
-          getPrinterStatus(p).then(data => ({ id: p.id, data })),
-        ),
-      );
-
-      const liveMap: Record<number, PrinterStatusData> = {};
-      let offlineCount = 0;
-
-      for (const r of results) {
-        if (r.status === 'fulfilled') {
-          liveMap[r.value.id] = r.value.data;
-          if (!r.value.data.online) offlineCount++;
-        } else {
-          offlineCount++;
-        }
-      }
-
-      setAll(prev =>
-        prev.map(p => {
-          const live = liveMap[p.id];
-          return live ? applyLiveData(p, live) : p;
-        }),
-      );
-
-      setLoading(false);
-    };
-
-    fetchAll();
-  }, []);
 
   const units = useMemo(() => {
     const unique = Array.from(new Set(all.map(p => p.unit))).sort();
@@ -120,6 +66,5 @@ export function usePrinters() {
     units,
     stats,
     updatePrinter,
-    loading,
   };
 }
