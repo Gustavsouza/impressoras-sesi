@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
-import { Sun, Moon, Printer, Wifi, WifiOff } from 'lucide-react';
+import { Sun, Moon, Printer, WifiOff, RefreshCw } from 'lucide-react';
 import type { Printer as PrinterType } from '../types/printer';
 import { usePrinters } from '../hooks/usePrinters';
-import { useNetworkDetection } from '../hooks/useNetworkDetection';
 import { useTheme } from '../contexts/ThemeContext';
 import DashboardStats from '../components/dashboard/DashboardStats';
 import PrinterCard from '../components/dashboard/PrinterCard';
@@ -19,7 +18,6 @@ const TYPE_OPTIONS = [
 
 export default function Dashboard() {
   const { isDark, toggle } = useTheme();
-  const { onCorporateNetwork, toggleNetwork } = useNetworkDetection();
 
   const {
     printers,
@@ -30,6 +28,7 @@ export default function Dashboard() {
     units,
     stats,
     updatePrinter,
+    refresh, refreshing, proxyAvailable,
   } = usePrinters();
 
   const [selected, setSelected]   = useState<PrinterType | null>(null);
@@ -58,34 +57,24 @@ export default function Dashboard() {
             <p className="text-sm text-brand-2 dark:text-night-4">
               {stats.total} impressoras · clique para editar
             </p>
-            {!onCorporateNetwork && (
-              <button
-                onClick={toggleNetwork}
-                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/25 dark:text-amber-400 dark:border-amber-700/40 hover:bg-amber-200 dark:hover:bg-amber-900/40 transition-colors"
-                title="Clique para marcar como dentro da rede corporativa"
-              >
+            {proxyAvailable === false && (
+              <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200 dark:bg-amber-900/25 dark:text-amber-400 dark:border-amber-700/40">
                 <WifiOff className="w-3 h-3 shrink-0" />
                 Fora da rede corporativa
-              </button>
+              </span>
             )}
           </div>
         </div>
 
         <div className="flex items-center gap-2 shrink-0">
           <button
-            onClick={toggleNetwork}
-            className={[
-              'w-8 h-8 flex items-center justify-center rounded-lg border transition-colors',
-              onCorporateNetwork
-                ? 'border-brand-4 dark:border-night-3 text-brand-2 dark:text-night-4 hover:bg-brand-5 dark:hover:bg-night-2'
-                : 'border-amber-300 dark:border-amber-700/50 text-amber-600 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-900/20',
-            ].join(' ')}
-            aria-label="Alternar status de rede"
-            title={onCorporateNetwork ? 'Rede corporativa ativa — clique para desativar' : 'Fora da rede corporativa — clique para ativar'}
+            onClick={refresh}
+            disabled={refreshing}
+            className="w-8 h-8 flex items-center justify-center rounded-lg border border-brand-4 dark:border-night-3 text-brand-2 dark:text-night-4 hover:bg-brand-5 dark:hover:bg-night-2 transition-colors disabled:opacity-50"
+            aria-label="Atualizar dados das impressoras"
+            title="Atualizar suprimentos"
           >
-            {onCorporateNetwork
-              ? <Wifi className="w-4 h-4" />
-              : <WifiOff className="w-4 h-4" />}
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
           </button>
           <button
             onClick={toggle}

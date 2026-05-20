@@ -16,7 +16,6 @@ function buildMessage(printer: Printer): string {
     `• REP: ${printer.rep}`,
     `• Serial: ${printer.serial}`,
     printer.pin ? `• PIN: ${printer.pin}` : null,
-    `• Fila de impressão: ${printer.queue}`,
     `• IP: ${printer.ip}`,
     `• Setor: ${printer.sector} — ${printer.unit}`,
   ].filter(Boolean).join('\n');

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo, useEffect, useCallback } from 'react';
 import { printers as initialData } from '../data/printers';
 import type { Printer, PrinterStatusData } from '../types/printer';
 import { getPrinterStatus } from '../services/printers/parserManager';
@@ -21,24 +21,30 @@ export function usePrinters() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [filterType, setFilterType] = useState<FilterType>('all');
   const [filterUnit, setFilterUnit] = useState('all');
+  const [refreshing, setRefreshing] = useState(false);
+  const [proxyAvailable, setProxyAvailable] = useState<boolean | null>(null);
 
-  useEffect(() => {
-    Promise.allSettled(
+  const runFetch = useCallback(async () => {
+    setRefreshing(true);
+    const results = await Promise.allSettled(
       initialData.map(p => getPrinterStatus(p).then(data => ({ id: p.id, data }))),
-    ).then(results => {
-      const liveMap: Record<number, PrinterStatusData> = {};
-      for (const r of results) {
-        if (r.status === 'fulfilled') liveMap[r.value.id] = r.value.data;
-        // rejected = proxy unavailable → keep static data for this printer
-      }
-      if (Object.keys(liveMap).length > 0) {
-        setAll(prev => prev.map(p => {
-          const live = liveMap[p.id];
-          return live ? applyLiveData(p, live) : p;
-        }));
-      }
-    });
+    );
+    const liveMap: Record<number, PrinterStatusData> = {};
+    for (const r of results) {
+      if (r.status === 'fulfilled') liveMap[r.value.id] = r.value.data;
+    }
+    const anyLive = Object.keys(liveMap).length > 0;
+    setProxyAvailable(anyLive);
+    if (anyLive) {
+      setAll(prev => prev.map(p => {
+        const live = liveMap[p.id];
+        return live ? applyLiveData(p, live) : p;
+      }));
+    }
+    setRefreshing(false);
   }, []);
+
+  useEffect(() => { runFetch(); }, [runFetch]);
 
   const units = useMemo(() => {
     const unique = Array.from(new Set(all.map(p => p.unit))).sort();
@@ -82,5 +88,6 @@ export function usePrinters() {
     filterType, setFilterType,
     filterUnit, setFilterUnit,
     units, stats, updatePrinter,
+    refresh: runFetch, refreshing, proxyAvailable,
   };
 }

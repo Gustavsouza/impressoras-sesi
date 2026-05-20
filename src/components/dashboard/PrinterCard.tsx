@@ -1,4 +1,5 @@
-import { Printer } from 'lucide-react';
+import { useState } from 'react';
+import { Printer, Copy, Check } from 'lucide-react';
 import StatusBadge from '../ui/StatusBadge';
 import TonerBar from '../ui/TonerBar';
 import InkLevels from '../ui/InkLevels';
@@ -20,6 +21,28 @@ interface Props {
   printer: PrinterType;
   onClick: () => void;
   onChamado: () => void;
+}
+
+function CopyButton({ value }: { value: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      className="ml-1 shrink-0 text-brand-4 dark:text-night-3 hover:text-brand-2 dark:hover:text-night-5 transition-colors"
+      title={`Copiar "${value}"`}
+    >
+      {copied
+        ? <Check className="w-3 h-3 text-green-500" />
+        : <Copy className="w-3 h-3" />}
+    </button>
+  );
 }
 
 export default function PrinterCard({ printer, onClick, onChamado }: Props) {
@@ -54,14 +77,17 @@ export default function PrinterCard({ printer, onClick, onChamado }: Props) {
           <div className="flex items-center gap-2 text-xs">
             <span className="text-brand-3 dark:text-night-4 w-9 shrink-0">REP</span>
             <span className="text-gray-700 dark:text-night-5 font-semibold">{printer.rep}</span>
+            <CopyButton value={printer.rep} />
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="text-brand-3 dark:text-night-4 w-9 shrink-0">Setor</span>
             <span className="text-gray-700 dark:text-night-5 font-medium truncate">{printer.sector}</span>
+            <CopyButton value={printer.sector} />
           </div>
           <div className="flex items-center gap-2 text-xs">
             <span className="text-brand-3 dark:text-night-4 w-9 shrink-0">IP</span>
             <span className="font-mono text-brand-2 dark:text-night-4">{printer.ip}</span>
+            <CopyButton value={printer.ip} />
           </div>
         </div>
 
