@@ -1,10 +1,9 @@
 <?php
 /**
  * Proxy reverso para impressoras internas.
- * Roda no XAMPP dentro da rede corporativa.
- * Ignora certificados autoassinados e adiciona cabeçalhos CORS.
+ * Roda no XAMPP dentro da rede corporativa (http://catjts21114029:8000).
  *
- * Uso: proxy.php?url=https://10.50.8.11/DevMgmt/ConsumableConfigDyn.xml
+ * Uso: proxy.php?url=http://10.50.8.11/DevMgmt/ConsumableConfigDyn.xml
  */
 
 header('Access-Control-Allow-Origin: *');
@@ -35,7 +34,7 @@ if (!preg_match('/^10\.(50|40)\.8\./', $host)) {
 $ch = curl_init($url);
 curl_setopt_array($ch, [
     CURLOPT_RETURNTRANSFER => true,
-    CURLOPT_SSL_VERIFYPEER => false,   // aceita certificados autoassinados
+    CURLOPT_SSL_VERIFYPEER => false,   // aceita certificados autoassinados das impressoras
     CURLOPT_SSL_VERIFYHOST => false,
     CURLOPT_TIMEOUT        => 8,
     CURLOPT_FOLLOWLOCATION => true,

@@ -1,7 +1,7 @@
 import type { PrinterStatusData } from '../../types/printer';
 import { proxyFetch } from './proxyFetch';
 
-// Endpoint: https://{ip}/DevMgmt/ConsumableConfigDyn.xml
+// Endpoint: http://{ip}/DevMgmt/ConsumableConfigDyn.xml
 // dd:ConsumablePercentageLevelRemaining → toner %
 // dd:ConsumableEstimatedPages           → pages remaining
 // dd:MeasuredQuantityState              → ok | low | veryLow

@@ -1,7 +1,7 @@
 import type { PrinterStatusData } from '../../types/printer';
 import { proxyFetch } from './proxyFetch';
 
-// Endpoint: https://{ip}/hp/device/InternalPages/Index?id=SuppliesStatus
+// Endpoint: http://{ip}/hp/device/InternalPages/Index?id=SuppliesStatus
 // #BlackCartridge1-Header_Level            → "78%"
 // #BlackCartridge1-EstimatedPagesRemaining → "4200"
 // #BlackCartridge1-SupplyState             → "OK" | "Low" | "Very Low"

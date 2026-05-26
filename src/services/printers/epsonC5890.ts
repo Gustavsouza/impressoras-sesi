@@ -1,7 +1,7 @@
 import type { PrinterStatusData } from '../../types/printer';
 import { proxyFetch } from './proxyFetch';
 
-// Endpoint: https://{ip}/PRESENTATION/ADVANCED/INFO_PRTINFO/TOP
+// Endpoint: http://{ip}/PRESENTATION/ADVANCED/INFO_PRTINFO/TOP
 // Ink levels encoded as inline gradient:
 //   style="background:linear-gradient(to top, #000000 0%, #000000 32%, ...)"
 // Order in DOM: BK, Y, M, C
