@@ -23,11 +23,25 @@ interface Props {
   onChamado: () => void;
 }
 
+function copyText(text: string): Promise<void> {
+  if (navigator.clipboard?.writeText) return navigator.clipboard.writeText(text);
+  return new Promise((resolve, reject) => {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+    document.body.appendChild(el);
+    el.select();
+    try { document.execCommand('copy') ? resolve() : reject(); }
+    catch { reject(); }
+    finally { document.body.removeChild(el); }
+  });
+}
+
 function CopyButton({ value }: { value: string }) {
   const [copied, setCopied] = useState(false);
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(value).then(() => {
+    copyText(value).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     });

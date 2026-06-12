@@ -44,7 +44,19 @@ export default function ChamadoModal({ printer, onClose }: Props) {
   const [copied, setCopied] = useState(false);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(message).then(() => {
+    const write = navigator.clipboard?.writeText
+      ? navigator.clipboard.writeText(message)
+      : new Promise<void>((resolve, reject) => {
+          const el = document.createElement('textarea');
+          el.value = message;
+          el.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+          document.body.appendChild(el);
+          el.select();
+          try { document.execCommand('copy') ? resolve() : reject(); }
+          catch { reject(); }
+          finally { document.body.removeChild(el); }
+        });
+    write.then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });
