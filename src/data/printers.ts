@@ -15,10 +15,10 @@ export const printers: Printer[] = [
     toner: 50, pagesRemaining: 3150, status: 'online', type: 'laser',
   },
   {
-    id: 3, model: 'HP E42540', sector: 'COORD PEDAGOGICO', ip: '10.50.8.17',
-    unit: 'JARDIM DA PENHA', rep: 'H489', serial: 'BRBSR8N06R',
+    id: 3, model: 'CANON iR 1643iF II', sector: 'COORD PEDAGOGICO', ip: '10.50.8.17',
+    unit: 'JARDIM DA PENHA', rep: 'U263', serial: '5JM24345',
     queue: 'SESI_VITORIA_JARDIMDAPENHA_PEDAGOGICO_PB',
-    toner: 23, pagesRemaining: 1200, status: 'warning', type: 'laser',
+    toner: 50, pagesRemaining: 3000, status: 'online', type: 'laser',
   },
   {
     id: 4, model: 'HP 4003', sector: 'GERENCIA', ip: '10.50.8.16',
